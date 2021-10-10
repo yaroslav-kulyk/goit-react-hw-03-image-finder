@@ -1,15 +1,19 @@
 import { Component } from 'react';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 
 import './Searchbar.css';
 
 class Searchbar extends Component {
+  static propTypes = {
+    onSubmit: PropTypes.func,
+  };
+
   state = {
     query: '',
   };
 
   handleChange = event => {
-    console.log(event);
     this.setState({ query: event.target.value.toLowerCase() });
   };
 
