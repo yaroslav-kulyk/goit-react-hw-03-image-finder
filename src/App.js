@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { ToastContainer } from 'react-toastify';
 import Searchbar from './components/Searchbar/Searchbar';
+import Modal from './components/Modal/Modal';
 import ImageGallery from './components/ImageGallery/ImageGallery';
 import Button from './components/Button/Button';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,6 +11,8 @@ class App extends Component {
     searchQuery: '',
     page: 1,
     status: 'idle',
+    showModal: false,
+    modalURL: '',
   };
 
   onSearch = searchQuery => {
@@ -22,15 +25,26 @@ class App extends Component {
     });
   };
 
-  onImageClick = url => {};
+  showModal = url => {
+    console.log(url);
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+      modalURL: url,
+    }));
+  };
 
   render() {
     return (
       <div>
         <ToastContainer autoClose={2500} />
         <Searchbar onSubmit={this.onSearch} />
-        <ImageGallery query={this.state.searchQuery} page={this.state.page} />
+        <ImageGallery
+          query={this.state.searchQuery}
+          page={this.state.page}
+          onClick={this.showModal}
+        />
         <Button onClick={this.onLoadMore} />
+        {this.state.showModal && <Modal url={this.state.modalURL} />}
       </div>
     );
   }

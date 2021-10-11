@@ -40,13 +40,19 @@ class ImageGallery extends Component {
   }
 
   render() {
+    console.log(this.props.onClick);
     return (
       <ul className="ImageGallery">
         {this.state.images &&
-          this.state.images.map(({ id, webformatURL, tags }) => {
+          this.state.images.map(({ largeImageURL, webformatURL, tags }) => {
             return (
               <div key={webformatURL}>
-                <ImageGalleryItem webformatURL={webformatURL} tags={tags} />
+                <ImageGalleryItem
+                  webformatURL={webformatURL}
+                  largeImageURL={largeImageURL}
+                  tags={tags}
+                  onClick={this.props.onClick}
+                />
               </div>
             );
           })}
