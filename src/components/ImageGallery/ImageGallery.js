@@ -30,6 +30,13 @@ class ImageGallery extends Component {
         }),
       );
     }
+
+    if (prevState.images) {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   }
 
   render() {
@@ -38,7 +45,7 @@ class ImageGallery extends Component {
         {this.state.images &&
           this.state.images.map(({ id, webformatURL, tags }) => {
             return (
-              <div key={id}>
+              <div key={webformatURL}>
                 <ImageGalleryItem webformatURL={webformatURL} tags={tags} />
               </div>
             );
