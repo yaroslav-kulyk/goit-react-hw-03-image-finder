@@ -1,32 +1,42 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import ImageGalleryItem from './ImageGalleryItem';
+import { fetchImages } from '../../services/pixabay-api';
 import './ImageGallery.css';
 
 class ImageGallery extends Component {
   static propTypes = {
     query: PropTypes.string.isRequired,
+    page: PropTypes.number.isRequired,
   };
 
   state = {
-    res: null,
+    images: null,
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.query !== this.props.query) {
-      fetch(
-        `https://pixabay.com/api/?q=${this.props.query}&page=1&key=22978515-5cb8795ed8e9eafc86c022855&image_type=photo&orientation=horizontal&per_page=12`,
-      )
-        .then(r => r.json())
-        .then(res => this.setState({ res }));
+      fetchImages(this.props.query, this.props.page).then(images =>
+        this.setState({ images }),
+      );
+
+      return;
+    }
+
+    if (prevProps.page !== this.props.page) {
+      fetchImages(this.props.query, this.props.page).then(images =>
+        this.setState(prevState => {
+          return { images: [...prevState.images, ...images] };
+        }),
+      );
     }
   }
 
   render() {
     return (
       <ul className="ImageGallery">
-        {this.state.res &&
-          this.state.res.hits.map(({ id, webformatURL, tags }) => {
+        {this.state.images &&
+          this.state.images.map(({ id, webformatURL, tags }) => {
             return (
               <div key={id}>
                 <ImageGalleryItem webformatURL={webformatURL} tags={tags} />
