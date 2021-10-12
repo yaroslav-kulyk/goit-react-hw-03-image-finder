@@ -18,4 +18,4 @@ function fetchImages(query, page) {
     .then(({ hits }) => hits);
 }
 
-export { fetchImages };
+export default fetchImages;

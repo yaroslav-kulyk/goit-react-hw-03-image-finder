@@ -10,7 +10,6 @@ class App extends Component {
   state = {
     searchQuery: '',
     page: 1,
-    status: 'idle',
     showModal: false,
     modalURL: '',
   };
@@ -40,19 +39,19 @@ class App extends Component {
   };
 
   render() {
+    const { searchQuery, page, modalURL, showModal } = this.state;
+
     return (
       <div>
         <ToastContainer autoClose={2500} />
-        {this.state.showModal && (
-          <Modal url={this.state.modalURL} onClose={this.closeModal} />
-        )}
+        {showModal && <Modal url={modalURL} onClose={this.closeModal} />}
         <Searchbar onSubmit={this.onSearch} />
         <ImageGallery
-          query={this.state.searchQuery}
-          page={this.state.page}
+          query={searchQuery}
+          page={page}
           onImageClick={this.showModal}
         />
-        <Button onClick={this.onLoadMore} />
+        {searchQuery && <Button onClick={this.onLoadMore} />}
       </div>
     );
   }
