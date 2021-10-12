@@ -25,33 +25,45 @@ class ImageGallery extends Component {
 
     if (prevProps.page !== this.props.page) {
       fetchImages(this.props.query, this.props.page).then(images =>
-        this.setState(prevState => {
-          return { images: [...prevState.images, ...images] };
-        }),
+        this.setState(
+          prevState => {
+            return { images: [...prevState.images, ...images] };
+          },
+          () => {
+            window.scrollTo({
+              top: document.documentElement.scrollHeight,
+              behavior: 'smooth',
+            });
+          },
+        ),
       );
     }
 
-    if (prevState.images) {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: 'smooth',
-      });
-    }
+    // if (prevState.images) {
+    //   window.scrollTo({
+    //     top: document.documentElement.scrollHeight,
+    //     behavior: 'smooth',
+    //   });
+    // }
   }
 
+  getLargeImgURL = index => {
+    console.log(index);
+    console.log(this.state.images[index]);
+    this.props.onImageClick(this.state.images[index].largeImageURL);
+  };
+
   render() {
-    console.log(this.props.onClick);
     return (
       <ul className="ImageGallery">
         {this.state.images &&
-          this.state.images.map(({ largeImageURL, webformatURL, tags }) => {
+          this.state.images.map(({ webformatURL, tags }, index) => {
             return (
-              <div key={webformatURL}>
+              <div key={index}>
                 <ImageGalleryItem
                   webformatURL={webformatURL}
-                  largeImageURL={largeImageURL}
                   tags={tags}
-                  onClick={this.props.onClick}
+                  onClick={() => this.getLargeImgURL(index)}
                 />
               </div>
             );

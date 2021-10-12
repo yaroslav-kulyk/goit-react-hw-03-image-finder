@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import './ImageGalleryItem.css';
 
-function ImageGalleryItem({ webformatURL, largeImageURL, tags, onClick }) {
+function ImageGalleryItem({ webformatURL, tags, onClick }) {
   return (
-    <li className="ImageGalleryItem" onClick={() => onClick(largeImageURL)}>
+    <li className="ImageGalleryItem" onClick={onClick}>
       <img src={webformatURL} alt={tags} className="ImageGalleryItem-image" />
     </li>
   );
@@ -12,6 +12,7 @@ function ImageGalleryItem({ webformatURL, largeImageURL, tags, onClick }) {
 ImageGalleryItem.propTypes = {
   webformatURL: PropTypes.string.isRequired,
   tags: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
 };
 
 export default ImageGalleryItem;

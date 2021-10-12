@@ -33,18 +33,26 @@ class App extends Component {
     }));
   };
 
+  closeModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+    }));
+  };
+
   render() {
     return (
       <div>
         <ToastContainer autoClose={2500} />
+        {this.state.showModal && (
+          <Modal url={this.state.modalURL} onClose={this.closeModal} />
+        )}
         <Searchbar onSubmit={this.onSearch} />
         <ImageGallery
           query={this.state.searchQuery}
           page={this.state.page}
-          onClick={this.showModal}
+          onImageClick={this.showModal}
         />
         <Button onClick={this.onLoadMore} />
-        {this.state.showModal && <Modal url={this.state.modalURL} />}
       </div>
     );
   }
