@@ -1,4 +1,6 @@
 import { Component } from 'react';
+import { createPortal } from 'react-dom';
+import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import ImageGalleryItem from './ImageGalleryItem';
 import Loader from 'react-loader-spinner';
@@ -12,80 +14,87 @@ const Status = {
   REJECTED: 'rejected',
 };
 
+const loaderRoot = document.querySelector('#loader-root');
+
 class ImageGallery extends Component {
   static propTypes = {
     query: PropTypes.string.isRequired,
     page: PropTypes.number.isRequired,
+    onImageClick: PropTypes.func.isRequired,
+    showButton: PropTypes.func.isRequired,
   };
 
   state = {
     images: null,
-    status: Status.IDLE,
+    status: 'idle',
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.query !== this.props.query) {
-      this.setState({ status: Status.PENDING });
+    const { query, page, showButton } = this.props;
 
-      setTimeout(() => {
-        fetchImages(this.props.query, this.props.page).then(images =>
-          this.setState({ images, status: 'resolved' }),
-        );
-      }, 1500);
+    if (prevProps.query !== query) {
+      this.setState({ status: Status.PENDING });
+      showButton(false);
+
+      fetchImages(query, page)
+        .then(images => {
+          if (!images.length) {
+            toast.info('No images found :(');
+            this.setState({ images, status: Status.IDLE });
+            return;
+          }
+
+          this.setState({ images, status: Status.RESOLVED }, showButton(true));
+        })
+        .catch(error => {
+          toast.error(`${error.message}`, {
+            theme: 'colored',
+          });
+
+          this.setState({ status: Status.REJECTED });
+        });
 
       return;
     }
 
-    if (prevProps.page !== this.props.page) {
-      this.setState({ status: 'idle' });
+    if (prevProps.page !== page) {
+      this.setState({ status: Status.PENDING });
 
-      fetchImages(this.props.query, this.props.page).then(images =>
-        this.setState(
-          prevState => {
+      fetchImages(query, page)
+        .then(images =>
+          this.setState(prevState => {
             return {
               images: [...prevState.images, ...images],
-              status: 'resolved',
+              status: Status.RESOLVED,
             };
-          },
-          () => {
-            window.scrollTo({
-              top: document.documentElement.scrollHeight,
-              behavior: 'smooth',
-            });
-          },
-        ),
-      );
+          }),
+        )
+        .then(() => {
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth',
+          });
+        });
     }
   }
 
   getLargeImgURL = index => {
-    console.log(index);
-    console.log(this.state.images[index]);
     this.props.onImageClick(this.state.images[index].largeImageURL);
   };
 
   render() {
     const { images, status } = this.state;
 
-    // if (status === 'pending') {
-    //   return (
-    //     <div className="loader">
-
-    //     </div>
-    //   );
-    // }
-
     return (
       <div>
-        <div className="loader">
-          <Loader
-            type="Grid"
-            color="#3f51b5"
-            height={100}
-            width={100}
-            visible={status === 'pending' ? true : false}
-          />
-        </div>
+        {status === 'pending' &&
+          createPortal(
+            <div className="loader">
+              <Loader type="Grid" color="#3f51b5" height={100} width={100} />
+            </div>,
+            loaderRoot,
+          )}
+
         <ul className="ImageGallery">
           {images &&
             images.map(({ webformatURL, tags }, index) => {

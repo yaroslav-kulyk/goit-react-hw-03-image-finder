@@ -14,7 +14,13 @@ function fetchImages(query, page) {
   const url = `${BASE_URL}?${searchParams}`;
 
   return fetch(url)
-    .then(response => response.json())
+    .then(response =>
+      response.ok
+        ? response.json()
+        : Promise.reject(
+            new Error(`Something went wrong, please try again later`),
+          ),
+    )
     .then(({ hits }) => hits);
 }
 

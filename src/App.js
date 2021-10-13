@@ -10,6 +10,7 @@ class App extends Component {
   state = {
     searchQuery: '',
     page: 1,
+    showButton: false,
     showModal: false,
     modalURL: '',
   };
@@ -24,22 +25,25 @@ class App extends Component {
     });
   };
 
+  showButton = bool => {
+    this.setState({ showButton: bool });
+  };
+
   showModal = url => {
-    console.log(url);
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
+    this.setState({
+      showModal: true,
       modalURL: url,
-    }));
+    });
   };
 
   closeModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
+    this.setState({
+      showModal: false,
+    });
   };
 
   render() {
-    const { searchQuery, page, modalURL, showModal } = this.state;
+    const { searchQuery, page, modalURL, showModal, showButton } = this.state;
 
     return (
       <div>
@@ -50,8 +54,9 @@ class App extends Component {
           query={searchQuery}
           page={page}
           onImageClick={this.showModal}
+          showButton={this.showButton}
         />
-        {searchQuery && <Button onClick={this.onLoadMore} />}
+        {showButton && <Button onClick={this.onLoadMore} />}
       </div>
     );
   }
